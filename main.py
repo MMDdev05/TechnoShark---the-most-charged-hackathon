@@ -15,7 +15,19 @@ class B_size(Base):
     size = Column(String, primary_key=True)
     help = relationship("Common_table", backref="help")
 
+class Industry(Base):
+    __tablename__ = "industry_table"
+    industry = Column(String, primary_key=True)
+    help = relationship("Common_table", backref="help")
+
+class Region(Base):
+    __tablename__ = "region_table"
+    region = Column(String, primary_key=True)
+    help = relationship("Common_table", backref="help")
+
 class Common_table(Base):
     __tablename__ = "common"
     help = Column(String, primary_key=True)
     size = relationship("B_size", backref='size')
+    industry = relationship("Industry", backref='industry')
+    region = relationship("Region", backref='region')
