@@ -2,19 +2,6 @@ from sqlalchemy import create_engine, or_, and_
 from sqlalchemy.orm import sessionmaker
 from db_structure import Base, Common, Help
 
-def request(size, industry, region):
-    r = []
-
-    data = session.query(Common).filter(and_(or_(Common.size == size, size == 'any'), or_(Common.industry == industry, industry == 'any'), or_(Common.region == region, region == 'any'))).all()
-
-    for log in data:
-        help_data = session.query(Help).filter(Help.id == log.help_id).all()
-
-        for help_log in help_data:
-            r.append(f'Title: {help_log.title}, Type: {help_log.type}, Amount: {help_log.amount}, Link: {help_log.link}')
-
-    return r
-
 engine = create_engine('sqlite:///database.db', echo=False)
 Base.metadata.create_all(engine)
 
