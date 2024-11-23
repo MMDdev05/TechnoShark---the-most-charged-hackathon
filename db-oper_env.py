@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_structure import Base, Common
+from db_structure import Base, Common, Help
 
 engine = create_engine('sqlite:///database.db', echo=False)
 Base.metadata.create_all(engine)
@@ -14,26 +14,31 @@ while True:
     if req == 'write':
         req2 = '0'
 
-        while req2 != 'commit':
-            req2 = input('Action (commit/write) > ')
+        w_help_type = input('help type > ')
+        w_help_link = input('help link > ')
+        w_help_examples = input('help examples > ')
+        w_region = input('region > ')
+        w_size = input('size > ')
+        w_industry = input('industry > ')
 
-            if req2 == 'write':
-                w_help = input('help > ')
-                w_help_link = input('help_link > ')
-                w_region = input('region > ')
-                w_size = input('size > ')
-                w_industry = input('industry > ')
-                session.add(Common(help = w_help, help_link = w_help_link, region = w_region, size = w_size, industry = w_industry))
+        new_help = Help(type=w_help_type, link=w_help_link, examples=w_help_examples)
+        session.add(new_help)
+        session.commit()
 
-            elif req2 == 'commit':
-                try:
-                    session.commit()
-                    print(f'# Data "{w_help, w_help_link, w_region, w_size, w_industry}" has been committed to Common')
-                except: print('Error while committing, try to write data another time')
+        new_common = Common(size=w_size, help_id=new_help.id, industry=w_industry, region=w_region)
+        session.add(new_common)
+        session.commit()
+
 
     elif req == 'read':
+
         data = session.query(Common).all()
+
         for log in data:
-            print(f'help: {log.help}, help_link: {log.help_link}, region: {log.region}, size: {log.size}, industry: {log.industry}')
+            help_entry = session.query(Help).filter(Help.id == log.help_id).first()
+
+            print(f'\nHelp Type: {help_entry.type}, Link: {help_entry.link}, Examples: {help_entry.examples}, '
+
+                  f'Region: {log.region}, Size: {log.size}, Industry: {log.industry}\n')
 
     else: break
