@@ -9,9 +9,10 @@ class Help(Base):
     __tablename__ = "help_table"
 
     id = Column(Integer, primary_key=True, unique=True)
-    name = Column(String)
     type = Column(String)
+    amount = Column(String)
     link = Column(String)
+    title = Column(String)
 
     commons = relationship("Common", back_populates="help", lazy='select')
 
