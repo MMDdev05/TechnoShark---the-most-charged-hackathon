@@ -34,7 +34,7 @@ while True:
 
         for log in data:
             session.query(Common).filter(log.id == index).delete()
-            session.query(Help).filter(log.help_id == Help.id).delete()
+            session.query(Help).filter(Help.id == index).delete()
 
         session.commit()  # Применяем изменения
         print(f'Object with id "{index}" has been deleted')

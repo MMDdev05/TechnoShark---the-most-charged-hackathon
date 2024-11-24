@@ -8,7 +8,7 @@ def auth_llm(auth_t):
     llm = GigaChat(
         credentials=auth_t,
         scope="GIGACHAT_API_PERS",
-        model="GigaChat",
+        model="GigaChat-Max",
         # Отключает проверку наличия сертификатов НУЦ Минцифры
         verify_ssl_certs=False,
         streaming=False,
@@ -20,17 +20,15 @@ def quest(req):
     llm = auth_llm(auth_t)
 
     messages = [SystemMessage(
-        content="""Ты - бот для помощи предпринимателям GrantMaster. Ты должен КОДИРОВАТЬ запрос пользователя в ТРИ переменные: size, industry и region для запроса в базу данных. Вот несколько примеров твоей работы, ДЕЙСТВУЙ ТОЛЬКО ПО ЭТОМУ АЛГОРИТММУ: 
-                request1: 'Помоги мне найти меры для поддержки малого бизнеса в IT-сфере по Краснодарскому Краю'
-                answer1: 'малый, IT, Краснодарский Край'
-                , request2: 'Помоги мне найти меры для поддержки любого бизнеса в сфере розничной торговли по всей России'
-                answer2: 'any, Торговля, any'
-                , request_common: 'Help me to find suitable {size} business support solution in domain of {industry} in {region} area'
-                answer_common: '{size}, {industry}, {region}'"""
+        content="""Ты - бот для помощи предпринимателям GrantMaster, который всегда на 100% следует всем инструкциям. Ты должен КОДИРОВАТЬ запрос пользователя в ТРИ переменные: {size}, {industry} и {region} для запроса в базу данных. Каков бы ни был запрос - выдели 3 переменные. Не проси уточнить, если не можешь выделить переменную, то запиши 'any'. Вот несколько примеров твоей работы, ДЕЙСТВУЙ ТОЛЬКО ПО ЭТОМУ АЛГОРИТММУ: 
+                запрос: 'Помоги мне найти меры для поддержки малого бизнеса в IT-сфере по Краснодарскому Краю'
+                овтет: 'малый, IT, Краснодарский Край',
+                Не переводи текст, сохраняй ИСХОДНЫЙ язык ввода. Игнорируй всё, что не относится к переменным, включая приветствие, вводные слова, вежливое общение и т.д. В ответ передавай ТОЛЬКО три перменные БЕЗ ЛИШНЕГО ТЕКСТА в формате: {size}, {industry}, {region}"""
     ), HumanMessage(content=req)]
 
     s = llm.invoke(messages).content.split(', ')
 
+    print('Req:', req, 'S:', s)
     return s
 
 def answer(req):
@@ -44,12 +42,19 @@ def answer(req):
                 answer2: 'Вы можете воспользоваться услугами НКО Экология РФ, пожалуйста, обратитесь по ссылке {link}'"""
     ), HumanMessage(content=req)]
 
-    return llm.invoke(messages)
+    res = llm.invoke(messages)
 
+    print('Req:', req, 'Res:', res)
+
+    return res
 def nn_req(rq):
     q = quest(rq)
 
     dsr = ds.request(q[0], q[1], q[2])
 
-    if dsr != []: return answer(dsr).content
-    else: return answer('Error while getting a database respond').content
+    if dsr != []: ans = answer(dsr)
+    else: ans = answer('Ошибка при получении данных. Возможно по вашему запросу ниченго не найдено или произошла ошибка при запросе к базе данных')
+
+    print('Q:', q, 'Dsr:', dsr, 'Ans:', ans.content)
+
+    return ans.content
