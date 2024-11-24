@@ -38,18 +38,25 @@ def request(size, industry, region):
     industry = industry.upper()
     region = region.upper()
     r = []
+    print(size, industry, region)
 
-    data = session.query(Common).filter(and_(or_(str(Common.size).upper() == size, size == 'ANY', str(Common.size).upper() == 'ANY'),
-                 or_(str(Common.industry).upper() == industry, industry == 'ANY', str(Common.industry).upper() == 'ANY'),
-                 or_(str(Common.region).upper() == region, region == 'ANY', str(Common.region).upper() == 'ANY')
-                 )).all()
+    data = session.query(Common).all()
+
+    # data = session.query(Common).filter(and_(or_(str(Common.size).upper() == size, size == 'ANY', str(Common.size).upper() == 'ANY'),
+    #              or_(str(Common.industry).upper() == industry, industry == 'ANY', str(Common.industry).upper() == 'ANY'),
+    #              or_(str(Common.region).upper() == region, region == 'ANY', str(Common.region).upper() == 'ANY')
+    #              )).all()
 
     for log in data:
 
+        n_log = session.query(Common).filter(and_(or_(str(log.size).upper() == size, size == 'ANY', str(log.size).upper() == 'ANY'),
+                  or_(str(log.industry).upper() == industry, industry == 'ANY', str(log.industry).upper() == 'ANY'),
+                  or_(str(log.region).upper() == region, region == 'ANY', str(log.region).upper() == 'ANY')
+                  )).all()
         help_log = session.query(Help).filter(log.help_id == Help.id).first()
 
         r.append(f'Title: {help_log.title}, Type: {help_log.type}, Amount: {help_log.amount}, Link: {help_log.link}')
 
     return r
 
-# print(request('малый', 'IT', 'Краснодарский Край'))
+print(request('any', 'any', 'Краснодарский Край'))

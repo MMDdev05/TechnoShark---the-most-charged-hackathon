@@ -8,7 +8,7 @@ def auth_llm(auth_t):
     llm = GigaChat(
         credentials=auth_t,
         scope="GIGACHAT_API_PERS",
-        model="GigaChat-Max",
+        model="GigaChat-Pro",
         # Отключает проверку наличия сертификатов НУЦ Минцифры
         verify_ssl_certs=False,
         streaming=False,
@@ -28,7 +28,6 @@ def quest(req):
 
     s = llm.invoke(messages).content.split(', ')
 
-    print('Req:', req, 'S:', s)
     return s
 
 def answer(req):
@@ -52,9 +51,13 @@ def nn_req(rq):
 
     dsr = ds.request(q[0], q[1], q[2])
 
-    if dsr != []: ans = answer(dsr)
-    else: ans = answer('Ошибка при получении данных. Возможно по вашему запросу ниченго не найдено или произошла ошибка при запросе к базе данных')
+    # if dsr != []: ans = answer(dsr)
+    # else: ans = answer('Ошибка при получении данных. Возможно по вашему запросу ниченго не найдено или произошла ошибка при запросе к базе данных.')
+
+    ans = answer(''.join(dsr))
 
     print('Q:', q, 'Dsr:', dsr, 'Ans:', ans.content)
 
     return ans.content
+
+print(answer(''.join(['Title: ПРОГРАММА "СТАРТ" РЕГИОНОВ РФ, Type: GRANT, Amount: 4_000_000 RUB / 8_000_000 RUB / 12_000_000 RUB, Link: HTTPS://FASIE.RU/PROGRAMS/PROGRAMMA-START/', 'Title: ОБРАЗОВАТЕЛЬНЫЕ УСЛУГИ, Type: EDUCATION, Amount: NULL, Link: HTTPS://MYBIZ63.RU/SERVICE-CATEGORIES/OBRAZOVATELNYE-USLUGI', 'Title: БИЗНЕС-ЦЕНТРЫ РЕГИОНОВ РФ, Type: CONSULTING, Amount: NULL, Link: HTTPS://XN--90AIFDDRLD7A.XN--P1AI/CENTERS/', 'Title: ГОСУДАРСТВЕННАЯ ПРОГРММА ПОДДЕРЖКИ МАЛОГО И СРЕДНЕГО БИЗНЕСА КРАСНОДАРСКОГО КРАЯ, Type: GRANT, Amount: <=3_000_000 RUB, Link: {LINK}'])))
