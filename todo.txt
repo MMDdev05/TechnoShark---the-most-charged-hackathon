@@ -1,5 +1,0 @@
-https://github.com/meta-llama/llama-recipes/tree/main/recipes/quickstart
-https://www.llama.com/docs/llama-everywhere
-https://pikabu.ru/story/polzuemsya_besplatno_api_chatgpt_bez_ogranicheniy_10431497
-https://huggingface.co/models?pipeline_tag=text-generation&language=ru&sort=trending
-https://docs.sqlalchemy.org/en/20/orm/quickstart.html

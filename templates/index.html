@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>GrantMaster</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <form method="POST">
+            <div class="form-group">
+                <textarea name="message" class="form-control" placeholder="Написать GrantMaster"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+        {% if response %}
+            <div class="alert alert-info mt-3">
+                Ответ нейросети: {{ response }}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

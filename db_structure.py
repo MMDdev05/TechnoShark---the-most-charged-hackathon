@@ -1,5 +1,5 @@
 from sqlalchemy import Column, create_engine
-from sqlalchemy import String, Integer, ForeignKey
+from sqlalchemy import String, Integer, ForeignKey, or_, and_
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, relationship
 
 class Base(DeclarativeBase):
@@ -30,22 +30,26 @@ class Common(Base):
 engine = create_engine('sqlite:///database.db', echo=False)
 Base.metadata.create_all(engine)
 
+Session = sessionmaker(bind=engine)
+session = Session()
 
 def request(size, industry, region):
+    size = size.upper()
+    industry = industry.upper()
+    region = region.upper()
     r = []
 
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
-    data = session.query(Common).filter(
-        and_(or_(Common.size == size, size == 'any'), or_(Common.industry == industry, industry == 'any'),
-             or_(Common.region == region, region == 'any'))).all()
+    data = session.query(Common).filter(and_(or_(str(Common.size).upper() == size, size == 'ANY', str(Common.size).upper() == 'ANY'),
+                 or_(str(Common.industry).upper() == industry, industry == 'ANY', str(Common.industry).upper() == 'ANY'),
+                 or_(str(Common.region).upper() == region, region == 'ANY', str(Common.region).upper() == 'ANY')
+                 )).all()
 
     for log in data:
-        help_data = session.query(Help).filter(Help.id == log.help_id).all()
 
-        for help_log in help_data:
-            r.append(
-                f'Title: {help_log.title}, Type: {help_log.type}, Amount: {help_log.amount}, Link: {help_log.link}')
+        help_log = session.query(Help).filter(log.help_id == Help.id).first()
+
+        r.append(f'Title: {help_log.title}, Type: {help_log.type}, Amount: {help_log.amount}, Link: {help_log.link}')
 
     return r
+
+# print(request('малый', 'IT', 'Краснодарский Край'))
